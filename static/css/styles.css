@@ -1,0 +1,162 @@
+:root {
+    /* Colores de estados de encomienda */
+    --estado-pendiente: #6c757d;
+    --estado-transito: #0d6efd;
+    --estado-destino: #fd7e14;
+    --estado-entregado: #198754;
+    --estado-devuelto: #dc3545;
+
+    /* Colores generales del sistema */
+    --color-primary: #0d6efd;
+    --color-bg: #f8f9fa;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.07);
+}
+
+/* Cuerpo general */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--color-bg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+/* Navbar */
+.navbar-brand {
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.navbar .nav-link {
+    font-weight: 500;
+    transition: opacity 0.15s;
+}
+
+.navbar .nav-link:hover {
+    opacity: 0.85;
+}
+
+.navbar .nav-link.active {
+    font-weight: 600;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.6);
+}
+
+/* Cards generales */
+.card {
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    font-weight: 600;
+    background-color: #fff;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.stat-card {
+    border-left: 4px solid;
+}
+
+/* Badges de estado de encomienda */
+.badge-estado {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+
+.badge-PE {
+    background-color: #e9ecef;
+    color: #495057;
+}
+
+.badge-TR {
+    background-color: #cfe2ff;
+    color: #084298;
+}
+
+.badge-DE {
+    background-color: #fff3cd;
+    color: #664d03;
+}
+
+.badge-EN {
+    background-color: #d1e7dd;
+    color: #0a3622;
+}
+
+.badge-DV {
+    background-color: #f8d7da;
+    color: #58151c;
+}
+
+/* Tablas */
+.table thead th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6c757d;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(13, 110, 253, 0.04);
+    cursor: pointer;
+}
+
+/* Formularios */
+.form-control:focus,
+.form-select:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+}
+
+/* Paginacion */
+.pagination .page-link {
+    color: var(--color-primary);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+/* Alertas flash: desaparecen automaticamente */
+.alert {
+    animation: fadeAlert 5s ease forwards;
+}
+
+@keyframes fadeAlert {
+    0% {
+        opacity: 1;
+        max-height: 200px;
+    }
+
+    70% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+        max-height: 0;
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+    }
+}

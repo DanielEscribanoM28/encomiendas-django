@@ -1,0 +1,30 @@
+{% if encomiendas.has_other_pages %}
+    <nav>
+        <ul class="pagination justify-content-center mb-0">
+            {# Boton anterior #}
+            {% if encomiendas.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ encomiendas.previous_page_number }}&q={{ q }}&estado={{ estado_activo }}">
+                        &laquo; Anterior
+                    </a>
+                </li>
+            {% endif %}
+
+            {# Numeros de pagina #}
+            {% for num in encomiendas.paginator.page_range %}
+                <li class="page-item {% if encomiendas.number == num %}active{% endif %}">
+                    <a class="page-link" href="?page={{ num }}&q={{ q }}&estado={{ estado_activo }}">{{ num }}</a>
+                </li>
+            {% endfor %}
+
+            {# Boton siguiente #}
+            {% if encomiendas.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ encomiendas.next_page_number }}&q={{ q }}&estado={{ estado_activo }}">
+                        Siguiente &raquo;
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endif %}

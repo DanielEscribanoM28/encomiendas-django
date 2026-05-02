@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ titulo }} - Encomiendas{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="h3"><i class="fas fa-plus me-2"></i>{{ titulo }}</h2>
+        <a href="{% url 'encomienda_lista' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Volver
+        </a>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-body">
+            <form method="post" id="encomiendaForm">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                            <p class="mb-0">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- Codigo y descripcion -->
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Codigo *</label>
+                        {{ form.codigo }}
+                        {% if form.codigo.errors %}
+                            <div class="invalid-feedback d-block">{{ form.codigo.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label">Descripcion *</label>
+                        {{ form.descripcion }}
+                        {% if form.descripcion.errors %}
+                            <div class="invalid-feedback d-block">{{ form.descripcion.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Remitente y destinatario -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Remitente *</label>
+                        {{ form.remitente }}
+                        {% if form.remitente.errors %}
+                            <div class="invalid-feedback d-block">{{ form.remitente.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Destinatario *</label>
+                        {{ form.destinatario }}
+                        {% if form.destinatario.errors %}
+                            <div class="invalid-feedback d-block">{{ form.destinatario.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Ruta, peso y costo -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Ruta *</label>
+                        {{ form.ruta }}
+                        {% if form.ruta.errors %}
+                            <div class="invalid-feedback d-block">{{ form.ruta.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Peso (kg) *</label>
+                        {{ form.peso_kg }}
+                        {% if form.peso_kg.errors %}
+                            <div class="invalid-feedback d-block">{{ form.peso_kg.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Costo (S/) *</label>
+                        {{ form.costo_envio }}
+                        {% if form.costo_envio.errors %}
+                            <div class="invalid-feedback d-block">{{ form.costo_envio.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Campos adicionales -->
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Volumen (cm3)</label>
+                        {{ form.volumen_cm3 }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Fecha estimada</label>
+                        {{ form.fecha_entrega_est }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Observaciones</label>
+                        {{ form.observaciones }}
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end mt-4">
+                    <button type="button" class="btn btn-outline-secondary me-2" onclick="history.back()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i>Guardar Encomienda
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

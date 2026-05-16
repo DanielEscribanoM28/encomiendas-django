@@ -5,9 +5,13 @@ import pytest
 from django.urls import reverse
 from django.utils import timezone
 from rest_framework import status
+from rest_framework.request import Request
+from rest_framework.test import APIRequestFactory
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from api.pagination import CustomPagination
+from api.throttling import BurstRateThrottle, SustainedRateThrottle
 from config.choices import EstadoEnvio
 from envios.models import Encomienda
 
@@ -34,6 +38,35 @@ class TestAutenticacion:
     def test_con_token_valido_devuelve_200(self, auth_client):
         response = auth_client.get(reverse('encomienda-list', kwargs={'version': 'v1'}))
         assert response.status_code == status.HTTP_200_OK
+
+    def test_verificar_token_jwt_devuelve_200(self, api_client):
+        user = UserFactory()
+        token = RefreshToken.for_user(user).access_token
+        response = api_client.post(
+            reverse('token_verify', kwargs={'version': 'v1'}),
+            {'token': str(token)},
+            format='json',
+        )
+        assert response.status_code == status.HTTP_200_OK
+
+
+def test_throttling_sesion_06_expone_scopes_esperados():
+    assert BurstRateThrottle.scope == 'burst'
+    assert SustainedRateThrottle.scope == 'sustained'
+
+
+def test_custom_pagination_incluye_links_y_numero_de_pagina():
+    factory = APIRequestFactory()
+    request = Request(factory.get('/api/v1/encomiendas/?page=1'))
+    paginator = CustomPagination()
+    page = paginator.paginate_queryset(list(range(12)), request)
+
+    response = paginator.get_paginated_response(page)
+
+    assert set(response.data) == {'links', 'count', 'pages', 'current_page', 'results'}
+    assert response.data['count'] == 12
+    assert response.data['pages'] == 2
+    assert response.data['current_page'] == 1
 
 
 @pytest.mark.django_db

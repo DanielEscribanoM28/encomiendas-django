@@ -7,6 +7,18 @@ class LoginRateThrottle(AnonRateThrottle):
     scope = 'login_attempt'
 
 
+class BurstRateThrottle(AnonRateThrottle):
+    """Limite corto para endpoints publicos o anonimos."""
+
+    scope = 'burst'
+
+
+class SustainedRateThrottle(UserRateThrottle):
+    """Limite sostenido para usuarios autenticados."""
+
+    scope = 'sustained'
+
+
 class EmpleadoRateThrottle(UserRateThrottle):
     """Empleados: 100 peticiones por minuto."""
 

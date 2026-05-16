@@ -8,7 +8,11 @@ from api.auth_views import EncomiendaTokenView, LoginCookieView, LogoutCookieVie
 from envios import api_views as envios_api_views
 from envios.viewsets import EncomiendaViewSet, RutaViewSet
 from rest_framework.routers import DefaultRouter
-from rest_framework_simplejwt.views import TokenBlacklistView, TokenRefreshView
+from rest_framework_simplejwt.views import (
+    TokenBlacklistView,
+    TokenRefreshView,
+    TokenVerifyView,
+)
 
 router = DefaultRouter()
 router.register('encomiendas', EncomiendaViewSet, basename='encomienda')
@@ -18,6 +22,7 @@ urlpatterns = [
     path('', include(router.urls)),
     path('auth/token/', EncomiendaTokenView.as_view(), name='token_obtain'),
     path('auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('auth/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('auth/token/blacklist/', TokenBlacklistView.as_view(), name='token_blacklist'),
     path('auth/login-cookie/', LoginCookieView.as_view(), name='login_cookie'),
     path('auth/logout-cookie/', LogoutCookieView.as_view(), name='logout_cookie'),

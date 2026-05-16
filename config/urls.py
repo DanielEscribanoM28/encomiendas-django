@@ -18,6 +18,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
+from importlib.util import find_spec
 
 from envios import views_auth
 
@@ -27,6 +28,7 @@ admin.site.index_title = 'Panel de Administracion'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/<version>/', include('api.urls')),
     path('', include('envios.urls')),
     path('login/', views_auth.login_view, name='login'),
     path('logout/', views_auth.logout_view, name='logout'),
@@ -34,5 +36,9 @@ urlpatterns = [
 ]
 
 if settings.DEBUG:
+    if getattr(settings, 'ENABLE_SILK', False) and find_spec('silk'):
+        urlpatterns += [
+            path('silk/', include('silk.urls', namespace='silk')),
+        ]
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

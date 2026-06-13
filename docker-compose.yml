@@ -3,7 +3,7 @@ version: '3.9'
 services:
   web:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
+    command: daphne -b 0.0.0.0 -p 8000 config.asgi:application
     volumes:
       - .:/app
     ports:
@@ -13,6 +13,7 @@ services:
     environment:
       DB_HOST: db
       DB_PORT: 5432
+      REDIS_URL: redis://redis:6379/1
     depends_on:
       - db
       - redis
@@ -48,6 +49,13 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:

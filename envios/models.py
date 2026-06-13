@@ -2,6 +2,8 @@ from datetime import timedelta
 from decimal import Decimal
 import uuid
 
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
@@ -169,7 +171,53 @@ class Encomienda(models.Model):
             observacion=observacion,
             empleado=empleado,
         )
+        self._notificar_cambio_estado(estado_anterior, nuevo_estado, empleado)
         return self
+
+    def _stats_dashboard(self):
+        hoy = timezone.now().date()
+        return {
+            'total_activas': Encomienda.objects.activas().count(),
+            'en_transito': Encomienda.objects.en_transito().count(),
+            'con_retraso': Encomienda.objects.con_retraso().count(),
+            'entregadas_hoy': Encomienda.objects.filter(
+                estado=EstadoEnvio.ENTREGADO,
+                fecha_entrega_real=hoy,
+            ).count(),
+        }
+
+    def _notificar_cambio_estado(self, estado_anterior, estado_nuevo, empleado):
+        channel_layer = get_channel_layer()
+        if not channel_layer:
+            return
+
+        mensaje = {
+            'encomienda_id': self.pk,
+            'codigo': self.codigo,
+            'estado_anterior': estado_anterior,
+            'estado_nuevo': estado_nuevo,
+            'empleado': str(empleado),
+            'timestamp': timezone.now().isoformat(),
+        }
+
+        stats = self._stats_dashboard()
+
+        async_to_sync(channel_layer.group_send)(
+            'encomiendas_global',
+            {'type': 'encomienda_estado_cambio', **mensaje},
+        )
+        async_to_sync(channel_layer.group_send)(
+            f'encomienda_{self.pk}',
+            {'type': 'encomienda_estado_cambio', **mensaje},
+        )
+        async_to_sync(channel_layer.group_send)(
+            'dashboard',
+            {'type': 'dashboard_actualizar', 'stats': stats},
+        )
+        async_to_sync(channel_layer.group_send)(
+            'dashboard',
+            {'type': 'encomienda_estado_cambio', **mensaje, 'stats': stats},
+        )
 
     def calcular_costo(self):
         precio_por_kg_extra = Decimal('2.50')

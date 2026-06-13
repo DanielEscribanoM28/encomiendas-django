@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import sys
 from pathlib import Path
 from decouple import config
 from datetime import timedelta
@@ -35,6 +36,7 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='').split(',')
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -52,6 +54,7 @@ INSTALLED_APPS = [
     'django_filters',
     'drf_spectacular',
     'corsheaders',
+    'channels',
 ]
 
 if config('ENABLE_SILK', cast=bool, default=False) and find_spec('silk'):
@@ -90,6 +93,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
+ASGI_APPLICATION = 'config.asgi.application'
 
 
 # Database
@@ -260,3 +264,25 @@ CACHES = {
     }
 }
 CACHE_TTL = 60 * 15
+
+# Channel Layer con Redis (Sesion 07)
+REDIS_URL = config('REDIS_URL', default='redis://localhost:6379/1')
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [REDIS_URL],
+            'capacity': 100,
+            'expiry': 60,
+            'prefix': 'encomiendas',
+        },
+    },
+}
+
+# En tests usamos memoria para no depender de Redis.
+if 'pytest' in sys.modules or 'test' in sys.argv:
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels.layers.InMemoryChannelLayer',
+        }
+    }
